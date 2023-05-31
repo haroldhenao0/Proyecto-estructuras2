@@ -58,54 +58,58 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
 	}
 	function toggleSave() {
 		if (isSaved) {
-			supabase
-				.from('saved_posts')
-				.delete()
-				.eq('post_id', id)
-				.eq('user_id', myProfile?.id)
-				.then((result) => {
-					setIsSaved(false);
-					setDropdownOpen(false);
-				});
+		  supabase
+			.from('saved_posts')
+			.delete()
+			.eq('post_id', id)
+			.eq('user_id', myProfile?.id)
+			.then(() => {
+			  setIsSaved(false);
+			  setDropdownOpen(false);
+			});
+		} else {
+		  supabase
+			.from('saved_posts')
+			.insert({
+			  user_id: myProfile?.id,
+			  post_id: id
+			})
+			.then(() => {
+			  setIsSaved(true);
+			  setDropdownOpen(false);
+			});
 		}
-		if (!isSaved) {
-			supabase
-				.from('saved_posts')
-				.insert({
-					user_id: myProfile.id,
-					post_id: id
-				})
-				.then((result) => {
-					setIsSaved(true);
-					setDropdownOpen(false);
-				});
-		}
-	}
+	  }
+	
 
 	const isLikedByMe = !!likes.find((like) => like.user_id === myProfile?.id);
 
 	function toggleLike() {
 		if (isLikedByMe) {
-			supabase
-				.from('likes')
-				.delete()
-				.eq('post_id', id)
-				.eq('user_id', myProfile.id)
-				.then(() => {
-					fetchLikes();
-				});
-			return;
-		}
-		supabase
+		  supabase
 			.from('likes')
-			.insert({
-				post_id: id,
-				user_id: myProfile.id
-			})
-			.then((result) => {
-				fetchLikes();
+			.delete()
+			.eq('post_id', id)
+			.eq('user_id', myProfile.id)
+			.then(() => {
+			  fetchLikes();
 			});
-	}
+		  return;
+		}
+	  
+		supabase
+		  .from('likes')
+		  .insert({
+			post_id: id,
+			user_id: myProfile.id
+		  })
+		  .then(() => {
+			fetchLikes();
+		  })
+		  .catch((error) => {
+			console.error('Error toggling like:', error);
+		  });
+	  }
 
 	function postComment(ev) {
 		ev.preventDefault();
@@ -123,7 +127,7 @@ export default function PostCard({ id, content, created_at, photos, profiles: au
 			});
 	}
 
-	return (
+		return (
 		<Card>
 			<div className="flex gap-3">
 				<div>

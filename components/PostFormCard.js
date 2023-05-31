@@ -80,10 +80,10 @@ export default function PostFormCard({ onPost }) {
 			)}
 			{uploads.length > 0 && (
 				<div className="flex gap-2">
-					{uploads.map((upload) => (
-						<div className="mt-2">
-							<img src={upload} alt="" className="w-auto h-24 rounded-md" />
-						</div>
+					{uploads.map((upload, index) => (
+					<div className="mt-2" key={index}>
+						<img src={upload} alt="" className="w-auto h-24 rounded-md" />
+					</div>
 					))}
 				</div>
 			)}
